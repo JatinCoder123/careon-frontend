@@ -7,16 +7,31 @@ import {
 } from "react-native";
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-
+import * as SecureStore from "expo-secure-store";
 export default function SplashScreen() {
   const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigation.replace("Auth");
-  //   }, 2000);
-  // }, []);
 
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+  const checkLoginStatus = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("authToken");
+
+      setTimeout(() => {
+        if (token) {
+          // ✅ User already logged in
+          navigation.replace("App");
+        } else {
+          // ❌ Not logged in
+          navigation.replace("Auth");
+        }
+      }, 2000); // splash duration
+    } catch (error) {
+      navigation.replace("Auth");
+    }
+  };
   return (
     <ImageBackground
       source={require("../../../assets/splash-icon.jpg")}

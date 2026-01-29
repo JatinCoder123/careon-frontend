@@ -1,8 +1,9 @@
 {
   "expo": {
     "name": "CareOn",
-    "slug": "CareOn",
+    "slug": "careon",
     "version": "1.0.0",
+    "scheme": "careon",
     "orientation": "portrait",
     "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "light",
@@ -13,17 +14,27 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.careon.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+
+      "edgeToEdgeEnabled": true,
+      "package": "com.careon.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": ["expo-secure-store", "expo-web-browser"],
+    "extra": {
+      "eas": {
+        "projectId": "88f4d44f-c1b1-4509-8666-6d608b8890fd"
+      }
+    },
+    "owner": "jatin-verma"
   }
 }
