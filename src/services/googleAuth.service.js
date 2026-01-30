@@ -7,7 +7,7 @@
 //     const [request, response, promptAsync] = Google.useAuthRequest({
 //         androidClientId: "77275497226-3jukkh5dugm520qbotpm641a8ipiar26.apps.googleusercontent.com",
 //         iosClientId: "77275497226-29sdprktl1gapn0loec4otpli28fkhcc.apps.googleusercontent.com",
-//         webClientId: "77275497226-6f7rm1i1c9v02eupv2gttgvpe640f1gq.apps.googleusercontent.com",
+//         webClientId: "77275497226-k3udb03liq57gur0207dhhbsn0nf3q0g.apps.googleusercontent.com",
 //         scopes: ["profile", "email"],
 //     });
 
@@ -18,7 +18,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 export const configureGoogleSignIn = () => {
   GoogleSignin.configure({
     webClientId:
-      "77275497226-6f7rm1i1c9v02eupv2gttgvpe640f1gq.apps.googleusercontent.com",
+      "77275497226-k3udb03liq57gur0207dhhbsn0nf3q0g.apps.googleusercontent.com",
     offlineAccess: true,
     forceCodeForRefreshToken: true,
   });
@@ -31,15 +31,6 @@ export const signInWithGoogle = async () => {
     });
 
     const userInfo = await GoogleSignin.signIn();
-
-    /*
-      userInfo = {
-        user: { email, name, photo },
-        idToken,
-        accessToken
-      }
-    */
-
     return userInfo;
   } catch (error) {
     console.log("Google Sign-In Error ❌", error);
