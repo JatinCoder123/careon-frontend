@@ -13,38 +13,25 @@ import { useState, useRef } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
-import { useGoogleAuth } from "../../services/googleAuth.service";
+import { signInWithGoogle } from "../../services/googleAuth.service";
 
 export default function LoginScreen() {
     const [phone, setPhone] = useState("");
     const [showOtpModal, setShowOtpModal] = useState(false);
-    const { request, response, promptAsync } = useGoogleAuth();
-
-    useEffect(() => {
-        if (response?.type === "success") {
-            const { authentication } = response;
-
-            // 🔐 Google ID token
-            const googleToken = authentication.idToken;
-
-            handleGoogleLogin(googleToken);
-        }
-    }, [response]);
-
-    const handleGoogleLogin = async (googleToken) => {
+    // const { request, response, promptAsync } = useGoogleAuth();
+    const handleGoogleLogin = async () => {
         try {
-            // 🔗 Send googleToken to backend
-            // const res = await api.googleLogin(googleToken);
+            const userInfo = await signInWithGoogle();
+            console.log("GOOGLE USER 👉", userInfo);
 
-            const appToken = "APP_JWT_TOKEN"; // from backend
-
-            await SecureStore.setItemAsync("authToken", appToken);
-
-            navigation.replace("App");
-        } catch (err) {
-            console.log("Google login failed", err);
+            // userInfo.user.email
+            // userInfo.idToken → send to backend
+        } catch (e) {
+            console.log("Google login cancelled or failed");
         }
     };
+
+
 
 
     const slideAnim = useRef(new Animated.Value(300)).current;
@@ -112,8 +99,8 @@ export default function LoginScreen() {
             {/* Google Login */}
             <TouchableOpacity
                 style={styles.googleBtn}
-                disabled={!request}
-                onPress={() => promptAsync()}
+                // disabled={!request}
+                onPress={() => handleGoogleLogin()}
             >
                 <AntDesign name="google" size={20} color="#FFFFFF" />
                 <Text style={styles.googleBtnText}> Continue with Google</Text>
@@ -271,3 +258,34 @@ const styles = StyleSheet.create({
         fontWeight: "500",
     },
 });
+
+
+
+
+
+
+// useEffect(() => {
+//     if (response?.type === "success") {
+//         const { authentication } = response;
+
+//         // 🔐 Google ID token
+//         const googleToken = authentication.idToken;
+
+//         handleGoogleLogin(googleToken);
+//     }
+// }, [response]);
+
+// const handleGoogleLogin = async (googleToken) => {
+//     try {
+//         // 🔗 Send googleToken to backend
+//         // const res = await api.googleLogin(googleToken);
+
+//         const appToken = "APP_JWT_TOKEN"; // from backend
+
+//         await SecureStore.setItemAsync("authToken", appToken);
+
+//         navigation.replace("App");
+//     } catch (err) {
+//         console.log("Google login failed", err);
+//     }
+// };
