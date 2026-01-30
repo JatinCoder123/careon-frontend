@@ -17,7 +17,8 @@ export default function SplashScreen() {
   }, []);
   const checkLoginStatus = async () => {
     try {
-      const token = await SecureStore.getItemAsync("authToken");
+      // const token = await SecureStore.getItemAsync("authToken");
+      const token = true;
 
       setTimeout(() => {
         if (token) {

@@ -16,41 +16,42 @@
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export const configureGoogleSignIn = () => {
-    GoogleSignin.configure({
-        webClientId:
-            "77275497226-6f7rm1i1c9v02eupv2gttgvpe640f1gq.apps.googleusercontent.com",
-        offlineAccess: true,
-        forceCodeForRefreshToken: true,
-    });
+  GoogleSignin.configure({
+    webClientId:
+      "77275497226-6f7rm1i1c9v02eupv2gttgvpe640f1gq.apps.googleusercontent.com",
+    offlineAccess: true,
+    forceCodeForRefreshToken: true,
+  });
 };
 
 export const signInWithGoogle = async () => {
-    try {
-        await GoogleSignin.hasPlayServices({
-            showPlayServicesUpdateDialog: true,
-        });
+  try {
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    });
 
-        const userInfo = await GoogleSignin.signIn();
+    const userInfo = await GoogleSignin.signIn();
 
-        /*
-          userInfo = {
-            user: { email, name, photo },
-            idToken,
-            accessToken
-          }
-        */
+    /*
+      userInfo = {
+        user: { email, name, photo },
+        idToken,
+        accessToken
+      }
+    */
 
-        return userInfo;
-    } catch (error) {
-        console.log("Google Sign-In Error ❌", error);
-        throw error;
-    }
+    return userInfo;
+  } catch (error) {
+    console.log("Google Sign-In Error ❌", error);
+    throw error;
+  }
 };
 
 export const signOutGoogle = async () => {
-    try {
-        await GoogleSignin.signOut();
-    } catch (error) {
-        console.log(error);
-    }
+  try {
+    await GoogleSignin.signOut();
+  } catch (error) {
+    console.log(error);
+  }
 };
+//client secret : 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
