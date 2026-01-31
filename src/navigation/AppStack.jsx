@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
-
+import { useSelector } from "react-redux";
 /* Navigators */
 import AppTabs from "./AppTabs";
 
@@ -12,6 +12,7 @@ import ProfileScreen from "../screens/profile/ProfileScreen";
 const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
+  const {user} = useSelector((state) => state.user);
   return (
     <Stack.Navigator>
       {/* Tabs with custom header */}
@@ -33,15 +34,22 @@ export default function AppStack() {
             </View>
           ),
           headerRight: () => (
-            <TouchableOpacity
+               <TouchableOpacity
               style={styles.profileBtn}
               onPress={() => navigation.navigate("Profile")}
             >
-              <Ionicons
-                name="person-circle-outline"
-                size={32}
-                color={COLORS.textPrimary}
-              />
+              {user?.photo ? (
+                <Image
+                  source={{ uri: user.photo }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <Ionicons
+                  name="person-circle-outline"
+                  size={32}
+                  color={COLORS.textPrimary}
+                />
+              )}
             </TouchableOpacity>
           ),
         })}
@@ -84,6 +92,12 @@ const styles = StyleSheet.create({
     marginRight: 4,
     borderRadius: 6,
   },
+  profileImage: {
+  width: 32,
+  height: 32,
+  borderRadius: 16,
+},
+
   appName: {
     fontSize: 18,
     fontWeight: "700",

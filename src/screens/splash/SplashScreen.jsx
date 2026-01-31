@@ -8,28 +8,39 @@ import {
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
+import { verifyToken } from "../../services/auth.service";
+import { useDispatch } from "react-redux";
+import { userAction } from "../../store/slices/user.slice.js";
 export default function SplashScreen() {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     checkLoginStatus();
   }, []);
   const checkLoginStatus = async () => {
     try {
-      // const token = await SecureStore.getItemAsync("authToken");
-      const token = false;
+      const token = await SecureStore.getItemAsync("authToken");
 
-      setTimeout(() => {
-        if (token) {
-          // ✅ User already logged in
-          navigation.replace("App");
-        } else {
-          // ❌ Not logged in
-          navigation.replace("Auth");
-        }
-      }, 2000); // splash duration
+      // ⏳ Keep splash visible for UX
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (!token) {
+        navigation.replace("Auth");
+        return;
+      }
+
+      // 🔐 Verify token with backend
+      const data = await verifyToken(token);
+
+      if (data.authenticated) {
+        dispatch(userAction.setUser(data.user));
+        navigation.replace("App");
+      } else {
+        throw new Error("Not authenticated");
+      }
     } catch (error) {
+      await SecureStore.deleteItemAsync("authToken");
       navigation.replace("Auth");
     }
   };
