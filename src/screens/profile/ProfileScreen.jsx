@@ -9,27 +9,29 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-// import * as ImagePicker from "expo-image-picker";
-import {
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 export default function ProfileScreen() {
   const [profileImage, setProfileImage] = useState(
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
   );
-
-  const [userInfo] = useState({
-    name: "John Anderson",
-    email: "john.anderson@email.com",
-    phone: "+1 (555) 123-4567",
-  });
+  const { user } = useSelector((state) => state.user);
 
   const [emergencyContacts, setEmergencyContacts] = useState([
-    { id: "1", name: "Sarah Anderson", phone: "+1 234 5678", relationship: "Spouse" },
-    { id: "2", name: "Michael Anderson", phone: "+1 345 6789", relationship: "Brother" },
+    {
+      id: "1",
+      name: "Sarah Anderson",
+      phone: "+1 234 5678",
+      relationship: "Spouse",
+    },
+    {
+      id: "2",
+      name: "Michael Anderson",
+      phone: "+1 345 6789",
+      relationship: "Brother",
+    },
   ]);
 
   const [showAddContact, setShowAddContact] = useState(false);
@@ -41,14 +43,14 @@ export default function ProfileScreen() {
 
   /* 📸 Pick profile image */
   const pickImage = async () => {
-    // const result = await ImagePicker.launchImageLibraryAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //   quality: 0.8,
-    // });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
 
-    // if (!result.canceled) {
-    //   setProfileImage(result.assets[0].uri);
-    // }
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
   };
 
   const addContact = () => {
@@ -73,7 +75,7 @@ export default function ProfileScreen() {
 
       {/* Profile Image */}
       <View style={styles.imageWrapper}>
-        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        <Image source={{ uri: user?.photo ?? profileImage }} style={styles.profileImage} />
         <TouchableOpacity style={styles.cameraBtn} onPress={pickImage}>
           <Ionicons name="camera" size={18} color="#fff" />
         </TouchableOpacity>
@@ -81,9 +83,9 @@ export default function ProfileScreen() {
 
       {/* User Info */}
       <View style={styles.card}>
-        <InfoRow icon="person-outline" label="Name" value={userInfo.name} />
-        <InfoRow icon="mail-outline" label="Email" value={userInfo.email} />
-        <InfoRow icon="call-outline" label="Phone" value={userInfo.phone} />
+        <InfoRow icon="person-outline" label="Name" value={user.name} />
+        <InfoRow icon="mail-outline" label="Email" value={user.email} />
+        <InfoRow icon="call-outline" label="Phone" value={user?.phone} />
       </View>
 
       {/* Emergency Contacts */}
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  infoRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
+  infoRow: { flexDirection: "row", gap: 12, marginBottom: 16, alignItems: "center" },
   infoLabel: { color: "#9CA3AF", fontSize: 12 },
   infoValue: { color: "#fff", fontSize: 14 },
 

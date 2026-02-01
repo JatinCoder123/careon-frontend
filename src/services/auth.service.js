@@ -1,10 +1,11 @@
 import axios from "axios";
-import { USER_API_URL } from "../../assets/assets";
+import { BASE_API_URL } from "../../assets/assets";
 // import { USER_API_URL } from "../../app.config.js";
 export const googleLogin = async (idToken) => {
+  console.log("Attempting Google login with ID Token:", idToken);
   try {
     const { data } = await axios.post(
-      `${USER_API_URL}/login/google`,
+      `${BASE_API_URL}/user/login/google`,
       { idToken },
       {
         headers: {
@@ -20,7 +21,7 @@ export const googleLogin = async (idToken) => {
 };
 export const verifyToken = async (token) => {
   try {
-    const { data } = await axios.get(`${USER_API_URL}/me`, {
+    const { data } = await axios.get(`${BASE_API_URL}/user/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
