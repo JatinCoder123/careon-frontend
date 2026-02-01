@@ -9,11 +9,11 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-// import * as Contacts from "expo-contacts";
+import * as Contacts from "expo-contacts";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
-import { showFakeCallNotification } from "../../services/fakeCall.service";
+import { showFakeCallNotification,scheduleFakeCall } from "../../services/fakeCall.service";
 
 const RANDOM_AVATAR =
   "https://i.pravatar.cc/300?img=" + Math.floor(Math.random() * 70);
@@ -49,22 +49,22 @@ export default function FakeCallSetupScreen() {
 
   /* ---------------- PICK CONTACT ---------------- */
   async function pickContact() {
-    // const { status } = await Contacts.requestPermissionsAsync();
-    // if (status !== "granted") {
-    //   Alert.alert("Permission required", "Contacts access is needed");
-    //   return;
-    // }
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission required", "Contacts access is needed");
+      return;
+    }
 
-    // const contact = await Contacts.presentFormAsync(null, {
-    //   fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
-    // });
+    const contact = await Contacts.presentFormAsync(null, {
+      fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
+    });
 
-    // if (contact?.name) {
-    //   setCallerName(contact.name);
-    //   if (contact.phoneNumbers?.length) {
-    //     setCallerNumber(contact.phoneNumbers[0].number);
-    //   }
-    // }
+    if (contact?.name) {
+      setCallerName(contact.name);
+      if (contact.phoneNumbers?.length) {
+        setCallerNumber(contact.phoneNumbers[0].number);
+      }
+    }
   }
 
   /* ---------------- SCHEDULE CALL ---------------- */
