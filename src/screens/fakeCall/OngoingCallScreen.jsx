@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useFakeCall, CALL_STATE } from "../context/FakeCallContext";
+import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
 
 export default function OngoingCallScreen() {
   const { callConfig, setCallState, callDuration, setCallDuration } =

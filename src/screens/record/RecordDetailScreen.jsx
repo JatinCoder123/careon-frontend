@@ -1,31 +1,45 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Video } from "expo-av";
 
 export default function RecordDetailScreen({ route }) {
   const { record } = route.params;
 
   return (
-    <View className="flex-1 bg-white px-4 pt-4">
-      
-      <Text className="text-xl font-bold mb-4">
+    <View style={styles.container}>
+
+      <Text style={styles.title}>
         Recording Details
       </Text>
 
       {/* Video */}
-      <Video
-        source={{ uri: record.videoUri || "" }}
-        useNativeControls
-        resizeMode="contain"
-        className="w-full h-64 rounded-xl bg-black"
-      />
+      <View style={styles.videoContainer}>
+        <Video
+          source={{ uri: record.videoUri || "" }}
+          useNativeControls
+          resizeMode="contain"
+          style={styles.video}
+        />
+      </View>
 
       {/* Info */}
-      <View className="mt-4 space-y-2">
-        <Text>📅 Date: {record.date}</Text>
-        <Text>⏱ Duration: {record.duration}</Text>
-        <Text>📍 Start Location: Available</Text>
-        <Text>📍 End Location: Available</Text>
-        <Text className="text-blue-600">
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>
+          📅 Date: {record.date}
+        </Text>
+
+        <Text style={styles.infoText}>
+          ⏱ Duration: {record.duration}
+        </Text>
+
+        <Text style={styles.infoText}>
+          📍 Start Location: Available
+        </Text>
+
+        <Text style={styles.infoText}>
+          📍 End Location: Available
+        </Text>
+
+        <Text style={styles.status}>
           ☁️ Status: {record.status}
         </Text>
       </View>
@@ -33,3 +47,48 @@ export default function RecordDetailScreen({ route }) {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#111827",
+  },
+
+  videoContainer: {
+    width: "100%",
+    height: 260,
+    backgroundColor: "#000000",
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+
+  video: {
+    width: "100%",
+    height: "100%",
+  },
+
+  infoContainer: {
+    marginTop: 16,
+  },
+
+  infoText: {
+    fontSize: 14,
+    color: "#374151", // gray-700
+    marginBottom: 6,
+  },
+
+  status: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#2563EB", // blue-600
+    marginTop: 8,
+  },
+});

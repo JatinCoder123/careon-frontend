@@ -1,4 +1,10 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 
 const dummyData = [
   {
@@ -19,29 +25,39 @@ const dummyData = [
 
 export default function RecordHistoryScreen({ navigation }) {
   return (
-    <View className="flex-1 bg-white px-4 pt-4">
-      
-      <Text className="text-xl font-bold mb-4">
+    <View style={styles.container}>
+
+      <Text style={styles.title}>
         Record History
       </Text>
 
       <FlatList
         data={dummyData}
         keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="border border-gray-200 rounded-xl p-4 mb-3"
+            style={styles.card}
             onPress={() =>
               navigation.navigate("RecordDetail", { record: item })
             }
           >
-            <Text className="font-semibold">
+            <Text style={styles.cardTitle}>
               {item.date} • {item.time}
             </Text>
-            <Text className="text-gray-600 text-sm mt-1">
+
+            <Text style={styles.duration}>
               Duration: {item.duration}
             </Text>
-            <Text className="text-xs mt-1 text-blue-600">
+
+            <Text
+              style={[
+                styles.status,
+                item.status === "Uploaded"
+                  ? styles.uploaded
+                  : styles.saved,
+              ]}
+            >
               Status: {item.status}
             </Text>
           </TouchableOpacity>
@@ -51,3 +67,53 @@ export default function RecordHistoryScreen({ navigation }) {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#111827",
+  },
+
+  card: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB", // gray-200
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    backgroundColor: "#FFFFFF",
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#111827",
+  },
+
+  duration: {
+    fontSize: 14,
+    color: "#4B5563", // gray-600
+    marginTop: 4,
+  },
+
+  status: {
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: "600",
+  },
+
+  uploaded: {
+    color: "#2563EB", // blue-600
+  },
+
+  saved: {
+    color: "#16A34A", // green-600
+  },
+});

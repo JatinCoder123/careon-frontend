@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useFakeCall, CALL_STATE } from "../context/FakeCallContext";
+import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
 import { playRingtone, stopRingtone } from "../../services/fakeCall.service";
 
 export default function IncomingCallScreen() {

@@ -18,7 +18,7 @@ export default function AppStack() {
         component={RecordHistoryScreen}
       />
       <Stack.Screen
-        name="Details"
+        name="RecordDetail"
         component={RecordDetailScreen}
       />
     </Stack.Navigator>
