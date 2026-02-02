@@ -13,7 +13,7 @@ import axios from "axios";
 
 const { width, height } = Dimensions.get("window");
 
-const GOOGLE_API_KEY = "[GCP_API_KEY]";
+const GOOGLE_API_KEY = "AIzaSyAhBGnIyTLuRzdWppKBJNW9bqLh9Odpp_A";
 
 export default function RoutesScreen() {
   const mapRef = useRef(null);
