@@ -4,23 +4,23 @@ import { configureGoogleSignIn } from "./src/services/googleAuth.service";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
 import store from "./src/store/store";
-import { FakeCallProvider } from "./src/context/fakeCall.context";
-import * as Notifications from 'expo-notifications';
+import { CALL_STATE, FakeCallProvider } from "./src/context/fakeCall.context";
+import * as Notifications from "expo-notifications";
+import { setupFakeCallNotifications } from "./notification.config";
 
-
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 export default function App() {
-
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
-
   useEffect(() => {
+    setupFakeCallNotifications();
     configureGoogleSignIn();
   }, []);
+
   return (
     <Provider store={store}>
       <FakeCallProvider>

@@ -79,6 +79,7 @@ export default function FakeCallSetupScreen() {
       showFakeCallNotification({
         callerName,
         callerNumber,
+        profilePic,
       });
       setCallState(CALL_STATE.RINGING);
     });

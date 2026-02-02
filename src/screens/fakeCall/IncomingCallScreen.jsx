@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
 import { playRingtone, stopRingtone } from "../../services/fakeCall.service";
 
@@ -13,56 +15,100 @@ export default function IncomingCallScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Top */}
+      <Text style={styles.incomingText}>Incoming call</Text>
+
+      {/* Caller Info */}
       <Text style={styles.name}>{callConfig?.callerName}</Text>
       <Text style={styles.number}>{callConfig?.callerNumber}</Text>
 
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={[styles.button, styles.reject]}
-          onPress={() => {
-            stopRingtone();
-            setCallState(CALL_STATE.IDLE);
-          }}
-        >
-          <Text style={styles.text}>Reject</Text>
-        </TouchableOpacity>
+      {/* Avatar */}
+      <Image source={{ uri: callConfig?.profilePic }} style={styles.avatar} />
 
+      {/* Buttons */}
+      <View style={styles.actions}>
+        {/* Accept */}
         <TouchableOpacity
-          style={[styles.button, styles.accept]}
+          style={[styles.circleBtn, styles.accept]}
           onPress={() => {
             stopRingtone();
             setCallState(CALL_STATE.ONGOING);
           }}
         >
-          <Text style={styles.text}>Accept</Text>
+          <Ionicons name="call" size={32} color="white" />
+        </TouchableOpacity>
+
+        {/* Decline */}
+        <TouchableOpacity
+          style={[styles.circleBtn, styles.decline]}
+          onPress={() => {
+            stopRingtone();
+            setCallState(CALL_STATE.IDLE);
+          }}
+        >
+          <Ionicons name="call" size={32} color="white" />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
-    justifyContent: "center",
     alignItems: "center",
+    paddingTop: 70,
+    backgroundColor: "#1e1e1e",
   },
-  name: { color: "white", fontSize: 32, fontWeight: "bold" },
-  number: { color: "gray", fontSize: 18, marginTop: 8 },
+
+  incomingText: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: 14,
+    marginBottom: 10,
+  },
+
+  name: {
+    color: "white",
+    fontSize: 30,
+    fontWeight: "600",
+  },
+
+  number: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 16,
+    marginTop: 6,
+  },
+
+  avatar: {
+    marginTop: 50,
+
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+  },
+
   actions: {
+    position: "absolute",
+    bottom: 80,
+    width: "100%",
     flexDirection: "row",
-    marginTop: 60,
-    gap: 40,
+    justifyContent: "space-around",
+    paddingHorizontal: 40,
   },
-  button: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+
+  circleBtn: {
+    width: 75,
+    height: 75,
+    borderRadius: 37.5,
     justifyContent: "center",
     alignItems: "center",
   },
-  reject: { backgroundColor: "red" },
-  accept: { backgroundColor: "green" },
-  text: { color: "white", fontWeight: "bold" },
+
+  accept: {
+    backgroundColor: "#2ecc71",
+  },
+
+  decline: {
+    backgroundColor: "#e74c3c",
+    transform: [{ rotate: "135deg" }],
+  },
 });

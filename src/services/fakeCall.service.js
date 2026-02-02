@@ -18,16 +18,19 @@ export async function showFakeCallNotification(callConfig) {
         type: "FAKE_CALL",
       },
     },
-    trigger: null, // show immediately
+    trigger: {
+      channelId: "default",
+      seconds: 1,
+    }, // show immediately
   });
 }
 
 export async function playRingtone() {
   sound = new Audio.Sound();
-  // await sound.loadAsync(require("../assets/ringtone.mp3"));
+  await sound.loadAsync(require("../../assets/notification.wav"));
   await sound.setIsLoopingAsync(true);
   await sound.playAsync();
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.ERROR);
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 }
 
 export async function stopRingtone() {

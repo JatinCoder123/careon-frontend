@@ -7,11 +7,40 @@ import AppTabs from "./AppTabs";
 
 /* Screens */
 import ProfileScreen from "../screens/profile/ProfileScreen";
+import { useEffect } from "react";
+import * as Notifications from "expo-notifications";
+import { useFakeCall, CALL_STATE } from "../context/fakeCall.context";
+import OngoingCallScreen from "../screens/fakeCall/OngoingCallScreen";
+import IncomingCallScreen from "../screens/fakeCall/IncomingCallScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
   const { user } = useSelector((state) => state.user);
+  const { setCallState, callState } = useFakeCall();
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const action = response.actionIdentifier;
+
+        if (action === "ACCEPT_CALL") {
+          setCallState(CALL_STATE.ONGOING);
+        }
+
+        if (action === "DECLINE_CALL") {
+          setCallState(CALL_STATE.IDLE);
+        }
+      },
+    );
+
+    return () => sub.remove();
+  }, []);
+  if (callState === CALL_STATE.RINGING) {
+    return <IncomingCallScreen />;
+  }
+  if (callState === CALL_STATE.ONGOING) {
+    return <OngoingCallScreen />;
+  }
   return (
     <Stack.Navigator>
       {/* Tabs with custom header */}
