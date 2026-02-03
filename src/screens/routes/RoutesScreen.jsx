@@ -1,15 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Dimensions,
-  Platform,
-} from "react-native";
+import { View, StyleSheet, Text, Dimensions, Platform } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import axios from "axios";
+import SearchBar from "./SearchBar";
 
 const { width, height } = Dimensions.get("window");
 
@@ -28,8 +23,7 @@ export default function RoutesScreen() {
   ---------------------------------------------------*/
   useEffect(() => {
     (async () => {
-      const { status } =
-        await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         alert("Location permission required");
         return;
@@ -163,23 +157,7 @@ export default function RoutesScreen() {
     <View style={styles.container}>
       {/* 🔍 DESTINATION INPUT */}
       <View style={styles.searchBox}>
-        <GooglePlacesAutocomplete
-          placeholder="Where are you going?"
-          fetchDetails
-          onPress={(data, details) => {
-            setDestination({
-              latitude: details.geometry.location.lat,
-              longitude: details.geometry.location.lng,
-            });
-          }}
-          query={{
-            key: GOOGLE_API_KEY,
-            language: "en",
-          }}
-          styles={{
-            textInput: styles.searchInput,
-          }}
-        />
+       <SearchBar onPlaceSelected={setDestination} apiKey={GOOGLE_API_KEY}/>
       </View>
 
       {/* 🗺️ MAP */}
@@ -204,7 +182,7 @@ export default function RoutesScreen() {
           <Marker
             coordinate={destination}
             title="Destination"
-            pinColor="red"
+            pinColor="green"
           />
         )}
 
@@ -212,9 +190,7 @@ export default function RoutesScreen() {
         {routes.map((route, index) => (
           <Polyline
             key={index}
-            coordinates={decodePolyline(
-              route.overview_polyline.points
-            )}
+            coordinates={decodePolyline(route.overview_polyline.points)}
             strokeWidth={5}
             strokeColor={routeColors[index % routeColors.length]}
           />
@@ -242,13 +218,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     zIndex: 10,
   },
-  searchInput: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 50,
-    fontSize: 16,
-  },
+ 
   center: {
     flex: 1,
     justifyContent: "center",

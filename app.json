@@ -22,6 +22,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "READ_MEDIA_VIDEO",
+        "READ_MEDIA_AUDIO",
+        "READ_MEDIA_IMAGES"
+      ],
       "edgeToEdgeEnabled": true,
       "package": "com.careon.app",
       "config": {
@@ -53,7 +62,9 @@
           ],
           "enableBackgroundRemoteNotifications": false
         }
-      ]
+      ],
+      "expo-audio",
+      "expo-video"
     ],
     "extra": {
       "eas": {
