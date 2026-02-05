@@ -3,6 +3,10 @@ import { Platform } from "react-native";
 
 export async function setupFakeCallNotifications() {
   // 🔹 Android channel
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== "granted") {
+    console.log("❌ Notification permission not granted");
+  }
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("fake-call", {
       name: "Fake Call",

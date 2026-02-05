@@ -5,6 +5,8 @@ import * as Location from "expo-location";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import axios from "axios";
 import SearchBar from "./SearchBar";
+import { useDispatch, useSelector } from "react-redux";
+import { routesAction } from "../../store/slices/routes.slice";
 
 const { width, height } = Dimensions.get("window");
 
@@ -12,10 +14,10 @@ const GOOGLE_API_KEY = "AIzaSyAhBGnIyTLuRzdWppKBJNW9bqLh9Odpp_A";
 
 export default function RoutesScreen() {
   const mapRef = useRef(null);
-
-  const [userLocation, setUserLocation] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [routes, setRoutes] = useState([]);
+  const dispatch = useDispatch();
+  const { userLocation, destination, routes } = useSelector(
+    (state) => state.routes,
+  );
   const [loadingRoutes, setLoadingRoutes] = useState(false);
 
   /* --------------------------------------------------
@@ -33,10 +35,12 @@ export default function RoutesScreen() {
         accuracy: Location.Accuracy.High,
       });
 
-      setUserLocation({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
+      dispatch(
+        routesAction.setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        }),
+      );
     })();
   }, []);
 
@@ -64,7 +68,7 @@ export default function RoutesScreen() {
       const response = await axios.get(url);
 
       if (response.data.routes.length) {
-        setRoutes(response.data.routes);
+        dispatch(routesAction.setRoutes(response.data.routes));
         fitMapToRoutes(response.data.routes);
       }
     } catch (error) {
@@ -157,7 +161,12 @@ export default function RoutesScreen() {
     <View style={styles.container}>
       {/* 🔍 DESTINATION INPUT */}
       <View style={styles.searchBox}>
-       <SearchBar onPlaceSelected={setDestination} apiKey={GOOGLE_API_KEY}/>
+        <SearchBar
+          onPlaceSelected={(place) =>
+            dispatch(routesAction.setDestination(place))
+          }
+          apiKey={GOOGLE_API_KEY}
+        />
       </View>
 
       {/* 🗺️ MAP */}
@@ -171,7 +180,7 @@ export default function RoutesScreen() {
           longitudeDelta: 0.01,
         }}
         onPress={(e) => {
-          setDestination(e.nativeEvent.coordinate);
+          dispatch(routesAction.setDestination(e.nativeEvent.coordinate));
         }}
       >
         {/* USER */}
@@ -218,7 +227,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     zIndex: 10,
   },
- 
+
   center: {
     flex: 1,
     justifyContent: "center",

@@ -20,8 +20,14 @@ export default function AppStack() {
   const { setCallState, callState } = useFakeCall();
   useEffect(() => {
     const sub = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
+      async (response) => {
         const action = response.actionIdentifier;
+             const notificationId =
+            response.notification.request.identifier;
+
+          // 🔥 Remove notification when clicked
+          await Notifications.dismissNotificationAsync(notificationId);
+
 
         if (action === "ACCEPT_CALL") {
           setCallState(CALL_STATE.ONGOING);

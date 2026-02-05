@@ -4,11 +4,11 @@ import * as Notifications from "expo-notifications";
 
 let sound;
 let timer;
-
+let activeFakeCallNotificationId = null;
 export async function showFakeCallNotification(callConfig) {
-  await Notifications.scheduleNotificationAsync({
+  const notification = await Notifications.scheduleNotificationAsync({
     content: {
-      title: callConfig.callerName,
+      title: callConfig.name,
       body: "Incoming call",
       categoryIdentifier: "FAKE_CALL",
       priority: Notifications.AndroidNotificationPriority.MAX,
@@ -23,8 +23,17 @@ export async function showFakeCallNotification(callConfig) {
       seconds: 1,
     }, // show immediately
   });
+  activeFakeCallNotificationId = notification;
+  return notification;
 }
-
+export async function dismissFakeCallNotification() {
+  if (activeFakeCallNotificationId) {
+    await Notifications.dismissNotificationAsync(
+      activeFakeCallNotificationId
+    );
+    activeFakeCallNotificationId = null;
+  }
+}
 export async function playRingtone() {
   sound = new Audio.Sound();
   await sound.loadAsync(require("../../assets/notification.wav"));

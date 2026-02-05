@@ -73,6 +73,7 @@ export default function RecordingHomeScreen({ navigation }) {
     const recordingPromise = cameraRef.current.startRecording({
       maxDuration: 300, // 5 min safety cap
     });
+    console.log("Recording started");
 
     dispatch(
       startRecording({

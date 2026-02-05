@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
-import { playRingtone, stopRingtone } from "../../services/fakeCall.service";
+import { dismissFakeCallNotification, playRingtone, stopRingtone } from "../../services/fakeCall.service";
 
 export default function IncomingCallScreen() {
-  const { callConfig, setCallState } = useFakeCall();
+  const { fakeCallContact, setCallState } = useFakeCall();
 
   useEffect(() => {
     playRingtone();
@@ -19,18 +19,18 @@ export default function IncomingCallScreen() {
       <Text style={styles.incomingText}>Incoming call</Text>
 
       {/* Caller Info */}
-      <Text style={styles.name}>{callConfig?.callerName}</Text>
-      <Text style={styles.number}>{callConfig?.callerNumber}</Text>
+      <Text style={styles.name}>{fakeCallContact?.name}</Text>
+      <Text style={styles.number}>{fakeCallContact?.number}</Text>
 
       {/* Avatar */}
-      <Image source={{ uri: callConfig?.profilePic }} style={styles.avatar} />
-
+      <Image source={{ uri: fakeCallContact?.profilePic }} style={styles.avatar} />
       {/* Buttons */}
       <View style={styles.actions}>
         {/* Accept */}
         <TouchableOpacity
           style={[styles.circleBtn, styles.accept]}
           onPress={() => {
+            dismissFakeCallNotification();
             stopRingtone();
             setCallState(CALL_STATE.ONGOING);
           }}
@@ -42,6 +42,7 @@ export default function IncomingCallScreen() {
         <TouchableOpacity
           style={[styles.circleBtn, styles.decline]}
           onPress={() => {
+            dismissFakeCallNotification();
             stopRingtone();
             setCallState(CALL_STATE.IDLE);
           }}

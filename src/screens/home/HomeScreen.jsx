@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,39 +6,62 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import {
-  Ionicons,
-  MaterialIcons,
-  Feather,
-} from "@expo/vector-icons";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { routesAction } from "../../store/slices/routes.slice";
 
 export default function HomeScreen() {
-  const [safetyStatus] = useState("medium"); // safe | medium | risk
-  const currentTime = "9:30 PM";
+  const [safetyStatus] = useState("medium");
+  const { userLocation:location } = useSelector((state) => state.routes);
+  const dispatch = useDispatch();
+  const currentTime = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const statusColor =
     safetyStatus === "safe"
       ? "#22C55E"
       : safetyStatus === "medium"
-      ? "#FACC15"
-      : "#EF4444";
+        ? "#FACC15"
+        : "#EF4444";
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
+
+      let loc = await Location.getCurrentPositionAsync({});
+      dispatch(
+        routesAction.setUserLocation({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        }),
+      );
+    })();
+  }, []);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 120 }}
+    >
       <Text style={styles.subtitle}>Stay safe, you’re not alone ❤️</Text>
-
-      {/* SAFETY STATUS CARD */}
+      {/* SAFETY STATUS */}
       <View style={[styles.statusCard, { borderColor: statusColor }]}>
         <View>
           <View style={styles.row}>
             <Ionicons name="location" size={16} color={statusColor} />
             <Text style={styles.statusText}>
-              Area Safety: {safetyStatus === "safe"
+              Area Safety:
+              {safetyStatus === "safe"
                 ? "Safe"
                 : safetyStatus === "medium"
-                ? "Medium Risk"
-                : "High Risk"}
+                  ? "Medium Risk"
+                  : "High Risk"}
             </Text>
           </View>
 
@@ -50,17 +73,30 @@ export default function HomeScreen() {
 
         <View style={[styles.pulseDot, { backgroundColor: statusColor }]} />
       </View>
+      {/* 🗺️ MAP PREVIEW */}
+      <View style={styles.mapCard}>
+        <Text style={styles.mapTitle}>Your Current Location</Text>
 
-      {/* SOS BUTTON */}
-      <View style={styles.sosWrapper}>
-        <TouchableOpacity style={styles.sosButton}>
-          <Text style={styles.sosText}>SOS</Text>
-          <Text style={styles.sosSub}>Tap to alert</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.sosHint}>Long press for silent activation</Text>
+        {location && (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+              title="You are here"
+            />
+          </MapView>
+        )}
       </View>
-
       {/* CHECK-IN */}
       <View style={styles.checkinCard}>
         <View style={styles.row}>
@@ -77,36 +113,49 @@ export default function HomeScreen() {
           <Text style={styles.checkBtnText}>Check In</Text>
         </TouchableOpacity>
       </View>
-
-      {/* SAFETY TIP */}
-      <View style={styles.tipCard}>
-        <Ionicons name="bulb" size={20} color="#60A5FA" />
-        <View style={{ marginLeft: 10 }}>
-          <Text style={styles.tipTitle}>Safety Tip</Text>
-          <Text style={styles.tipText}>
-            It’s late. Consider sharing your live location with a trusted contact.
-          </Text>
-        </View>
-      </View>
-
-      {/* QUICK ACTIONS */}
       <Text style={styles.sectionTitle}>Quick Actions</Text>
-
       <View style={styles.grid}>
-        <ActionCard icon="map" color="#60A5FA" title="Safe Routes" subtitle="Find safest path" />
-        <ActionCard icon="mic" color="#A78BFA" title="Record Silently" subtitle="Record discreetly" />
-        <ActionCard icon="call" color="#22C55E" title="Fake Call" subtitle="Exit situations" />
-        <ActionCard icon="people" color="#FB923C" title="Emergency Contacts" subtitle="Who gets alerted" />
+        <ActionCard
+          icon="map"
+          color="#60A5FA"
+          title="Safe Routes"
+          subtitle="Find safest path"
+          navigate="Routes"
+        />
+        <ActionCard
+          icon="mic"
+          color="#A78BFA"
+          title="Record Silently"
+          subtitle="Record discreetly"
+          navigate="Record"
+        />
+        <ActionCard
+          icon="call"
+          color="#22C55E"
+          title="Fake Call"
+          subtitle="Exit situations"
+          navigate="FakeCall"
+        />
+        <ActionCard
+          icon="people"
+          color="#FB923C"
+          title="Emergency Contacts"
+          subtitle="Who gets alerted"
+          navigate="Profile"
+        />
       </View>
-
     </ScrollView>
   );
 }
 
 /* 🔹 QUICK ACTION CARD */
-function ActionCard({ icon, color, title, subtitle }) {
+function ActionCard({ icon, color, title, subtitle, navigate }) {
+  const nav = useNavigation();
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => nav.navigate(navigate)}
+    >
       <View style={[styles.cardIcon, { backgroundColor: `${color}20` }]}>
         <Ionicons name={icon} size={22} color={color} />
       </View>
@@ -201,35 +250,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 
-  sosWrapper: { alignItems: "center", marginBottom: 20 },
-
-  sosButton: {
-    width: 150,
-    height: 150,
-    backgroundColor: "#EF4444",
-    borderRadius: 75,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 10,
-  },
-
-  sosText: {
-    color: "#fff",
-    fontSize: 40,
-    fontWeight: "800",
-  },
-
-  sosSub: {
-    color: "#FEE2E2",
-    fontSize: 12,
-  },
-
-  sosHint: {
-    color: "#9CA3AF",
-    fontSize: 12,
-    marginTop: 6,
-  },
-
   checkinCard: {
     backgroundColor: "#111827",
     borderRadius: 16,
@@ -258,17 +278,6 @@ const styles = StyleSheet.create({
   },
 
   checkBtnText: { color: "#22C55E", fontSize: 12 },
-
-  tipCard: {
-    backgroundColor: "#1E293B",
-    borderRadius: 16,
-    padding: 14,
-    flexDirection: "row",
-    marginBottom: 24,
-  },
-
-  tipTitle: { color: "#93C5FD", fontSize: 12, fontWeight: "600" },
-  tipText: { color: "#E5E7EB", fontSize: 13, marginTop: 2 },
 
   sectionTitle: {
     color: "#9CA3AF",
@@ -307,5 +316,22 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontSize: 12,
     marginTop: 2,
+  },
+  mapCard: {
+    backgroundColor: "#111827",
+    borderRadius: 16,
+    overflow: "hidden",
+    marginBottom: 20,
+  },
+
+  mapTitle: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    padding: 10,
+  },
+
+  map: {
+    width: "100%",
+    height: 280,
   },
 });

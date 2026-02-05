@@ -12,7 +12,7 @@ import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
 
 export default function OngoingCallScreen() {
   const {
-    callConfig,
+    fakeCallContact,
     setCallState,
     callDuration,
     setCallDuration,
@@ -37,13 +37,13 @@ export default function OngoingCallScreen() {
       {/* Avatar */}
       <View style={styles.avatarWrapper}>
         <Image
-          source={{ uri: callConfig?.profilePic }}
+          source={{ uri: fakeCallContact?.profilePic }}
           style={styles.avatar}
         />
       </View>
 
       {/* Name & Time */}
-      <Text style={styles.name}>{callConfig?.callerName}</Text>
+      <Text style={styles.name}>{fakeCallContact?.name}</Text>
       <Text style={styles.timer}>
         {minutes}:{seconds}
       </Text>
@@ -61,7 +61,10 @@ export default function OngoingCallScreen() {
       {/* End Call */}
       <TouchableOpacity
         style={styles.endCall}
-        onPress={() => setCallState(CALL_STATE.IDLE)}
+        onPress={() => {
+          setCallDuration(0);
+          setCallState(CALL_STATE.IDLE);
+        }}
       >
         <Ionicons name="call" size={30} color="white" />
       </TouchableOpacity>

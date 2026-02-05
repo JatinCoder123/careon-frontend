@@ -13,18 +13,20 @@ import * as Contacts from "expo-contacts";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
-import { showFakeCallNotification,scheduleFakeCall } from "../../services/fakeCall.service";
-
-const RANDOM_AVATAR =
-  "https://i.pravatar.cc/300?img=" + Math.floor(Math.random() * 70);
+import {
+  showFakeCallNotification,
+  scheduleFakeCall,
+} from "../../services/fakeCall.service";
 
 export default function FakeCallSetupScreen() {
-  const { setCallConfig, setCallState } = useFakeCall();
-
-  const [callerName, setCallerName] = useState("Mom ❤️");
-  const [callerNumber, setCallerNumber] = useState("+91 XXXXXXXX");
+  const { setCallState, fakeCallContact, setFakeCallContact } = useFakeCall();
+  const updateContactFromStorage = (key, value) => {
+    setFakeCallContact((prevContact) => ({
+      ...prevContact,
+      [key]: value,
+    }));
+  };
   const [delay, setDelay] = useState(10);
-  const [profilePic, setProfilePic] = useState(RANDOM_AVATAR);
 
   /* ---------------- PICK IMAGE ---------------- */
   async function pickImage() {
@@ -43,7 +45,7 @@ export default function FakeCallSetupScreen() {
     });
 
     if (!result.canceled) {
-      setProfilePic(result.assets[0].uri);
+      updateContactFromStorage("profilePic", result.assets[0].uri);
     }
   }
 
@@ -55,31 +57,31 @@ export default function FakeCallSetupScreen() {
       return;
     }
 
-    const contact = await Contacts.presentFormAsync(null, {
-      fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
+    const result = await Contacts.presentContactPickerAsync({
+      fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
     });
+    console.log("Picked contact:", result);
+    if (!result) return;
 
-    if (contact?.name) {
-      setCallerName(contact.name);
-      if (contact.phoneNumbers?.length) {
-        setCallerNumber(contact.phoneNumbers[0].number);
-      }
+    const { firstName, phoneNumbers, image } = result;
+
+    if (firstName) updateContactFromStorage("name", firstName);
+    if (phoneNumbers?.length) {
+      updateContactFromStorage("number", phoneNumbers[0].number);
+    }
+    if (image) {
+      updateContactFromStorage("profilePic", image.uri);
     }
   }
 
   /* ---------------- SCHEDULE CALL ---------------- */
   function handleSchedule() {
-    setCallConfig({
-      callerName,
-      callerNumber,
-      profilePic,
-    });
-
+    console.log(fakeCallContact);
     scheduleFakeCall(delay, () => {
       showFakeCallNotification({
-        callerName,
-        callerNumber,
-        profilePic,
+        callerName: fakeCallContact.name,
+        callerNumber: fakeCallContact.number,
+        profilePic: fakeCallContact.profilePic,
       });
       setCallState(CALL_STATE.RINGING);
     });
@@ -92,7 +94,10 @@ export default function FakeCallSetupScreen() {
       {/* PROFILE SECTION */}
       <View style={styles.profileRow}>
         <View style={styles.avatarWrapper}>
-          <Image source={{ uri: profilePic }} style={styles.avatar} />
+          <Image
+            source={{ uri: fakeCallContact.profilePic }}
+            style={styles.avatar}
+          />
 
           <TouchableOpacity style={styles.cameraIcon} onPress={pickImage}>
             <Ionicons name="camera" size={18} color="white" />
@@ -108,16 +113,16 @@ export default function FakeCallSetupScreen() {
       {/* NAME */}
       <Text style={styles.label}>Caller Name</Text>
       <TextInput
-        value={callerName}
-        onChangeText={setCallerName}
+        value={fakeCallContact.name}
+        onChangeText={(value) => updateContactFromStorage("name", value)}
         style={styles.input}
       />
 
       {/* NUMBER */}
       <Text style={styles.label}>Caller Number</Text>
       <TextInput
-        value={callerNumber}
-        onChangeText={setCallerNumber}
+        value={fakeCallContact.number}
+        onChangeText={(value) => updateContactFromStorage("number", value)}
         style={styles.input}
         keyboardType="phone-pad"
       />
@@ -148,7 +153,7 @@ export default function FakeCallSetupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#06121f", // deep dark
     padding: 24,
   },
   heading: {

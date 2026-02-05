@@ -11,13 +11,18 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "expo-router";
+import { userAction } from "../../store/slices/user.slice";
+import * as SecureStore from "expo-secure-store";
 
 export default function ProfileScreen() {
   const [profileImage, setProfileImage] = useState(
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
   );
   const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigation();
 
   const [emergencyContacts, setEmergencyContacts] = useState([
     {
@@ -65,6 +70,12 @@ export default function ProfileScreen() {
   const deleteContact = (id) => {
     setEmergencyContacts(emergencyContacts.filter((c) => c.id !== id));
   };
+  const handleLogOut = async () => {
+    // Implement logout functionality
+    dispatch(userAction.logoutUser());
+    navigate.replace("Auth");
+    await SecureStore.deleteItemAsync("authToken");
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -75,7 +86,10 @@ export default function ProfileScreen() {
 
       {/* Profile Image */}
       <View style={styles.imageWrapper}>
-        <Image source={{ uri: user?.photo ?? profileImage }} style={styles.profileImage} />
+        <Image
+          source={{ uri: user?.photo ?? profileImage }}
+          style={styles.profileImage}
+        />
         <TouchableOpacity style={styles.cameraBtn} onPress={pickImage}>
           <Ionicons name="camera" size={18} color="#fff" />
         </TouchableOpacity>
@@ -161,7 +175,7 @@ export default function ProfileScreen() {
       </Modal>
 
       {/* Logout */}
-      <TouchableOpacity style={styles.logoutBtn}>
+      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogOut}>
         <MaterialIcons name="logout" size={20} color="#fff" />
         <Text style={styles.logoutText}>Sign Out</Text>
       </TouchableOpacity>
@@ -209,7 +223,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  infoRow: { flexDirection: "row", gap: 12, marginBottom: 16, alignItems: "center" },
+  infoRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 16,
+    alignItems: "center",
+  },
   infoLabel: { color: "#9CA3AF", fontSize: 12 },
   infoValue: { color: "#fff", fontSize: 14 },
 
