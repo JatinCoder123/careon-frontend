@@ -18,9 +18,9 @@ import * as SecureStore from "expo-secure-store";
 import { signInWithGoogle } from "../../services/googleAuth.service";
 import { useDispatch } from "react-redux";
 import { userAction } from "../../store/slices/user.slice";
+import PhoneLoginScreen from "./PhoneLoginScreen";
 
 export default function LoginScreen() {
-  const [phone, setPhone] = useState("");
   const [showOtpModal, setShowOtpModal] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -80,30 +80,7 @@ export default function LoginScreen() {
       <Text style={styles.subtitle}>Your safety mode starts here</Text>
 
       {/* Phone Input */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.countryCode}>+91</Text>
-        <TextInput
-          placeholder="Enter mobile number"
-          placeholderTextColor="#6B7280"
-          keyboardType="phone-pad"
-          maxLength={10}
-          value={phone}
-          onChangeText={setPhone}
-          style={styles.input}
-        />
-      </View>
-
-      {/* Phone Login */}
-      <TouchableOpacity
-        style={styles.primaryBtn}
-        onPress={() => {
-          setShowOtpModal(true);
-          openModal();
-        }}
-      >
-        <Text style={styles.primaryBtnText}>Continue with Mobile Number</Text>
-      </TouchableOpacity>
-
+      <PhoneLoginScreen/>
       {/* Divider */}
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />

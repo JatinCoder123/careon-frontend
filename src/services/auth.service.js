@@ -19,6 +19,24 @@ export const googleLogin = async (idToken) => {
     console.log("Google login error:", error);
   }
 };
+export const phoneLogin = async (idToken) => {
+  console.log("Attempting phone login with ID Token:", idToken);
+  try {
+    const { data } = await axios.post(
+      `${BASE_API_URL}/user/login/phone`,
+      { firebaseToken: idToken },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    console.log("Phone login response:", data);
+    return data;
+  } catch (error) {
+    console.log("Phone login error:", error);
+  }
+};
 export const verifyToken = async (token) => {
   try {
     const { data } = await axios.get(`${BASE_API_URL}/user/me`, {
@@ -30,7 +48,7 @@ export const verifyToken = async (token) => {
     return data;
   } catch (error) {
     console.error(
-      "Token verification error:",  
+      "Token verification error:",
       error.response?.data || error.message,
     );
     throw error;
