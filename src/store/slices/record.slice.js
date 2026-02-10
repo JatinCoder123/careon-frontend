@@ -1,18 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import * as FileSystem from "expo-file-system";
 import { Camera } from "expo-camera";
+import { Directory, File } from "expo-file-system";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const EVIDENCE_DIR = FileSystem.documentDirectory + "evidence/";
+// const evidenceDir = new Directory(Paths.cache, "evidence");
 
-export async function ensureEvidenceDir() {
-  const dir = await FileSystem.getInfoAsync(EVIDENCE_DIR);
-  if (!dir.exists) {
-    await FileSystem.makeDirectoryAsync(EVIDENCE_DIR, {
-      intermediates: true,
-    });
-  }
-}
+// export function ensureEvidenceDir() {
+//   evidenceDir.create({ intermediates: true });
+// }
+
 export async function requestPermissions() {
   const camera = await Camera.requestCameraPermissionsAsync();
   const mic = await Camera.requestMicrophonePermissionsAsync();
@@ -66,7 +64,7 @@ const recordingSlice = createSlice({
     },
 
     // 📂 Save to history
-    addRecordingToHistory(state,action) {
+    addRecordingToHistory(state, action) {
       state.history.unshift(action.payload);
       state.current = initialState.current;
     },
@@ -94,20 +92,24 @@ const recordingSlice = createSlice({
 });
 export function handleRecordingSaved(tempUri) {
   return async (dispatch, getState) => {
-    const fileName = `evidence_${Date.now()}.mp4`;
-    const finalPath = EVIDENCE_DIR + fileName;
+    // console.log("H")
+    // await ensureEvidenceDir();
+    // console.log("I")
 
-    await FileSystem.moveAsync({
-      from: tempUri,
-      to: finalPath,
-    });
+    // const fileName = `evidence_${Date.now()}.mp4`;
+    // const videoFile = evidenceDir.createFile(fileName);
 
-    console.log("Saved at:", finalPath);
+    // await videoFile.moveFrom(tempUri);
+
+    // final URI (use this for DB / Redux / history)
+    // const finalUri = videoFile.uri;
+
+    // console.log("Saved at:", finalUri);
     const existing =
       JSON.parse(await AsyncStorage.getItem("record_history")) || [];
     const data = {
       ...getState().recording.current,
-      videoUri: finalPath,
+      videoUri: tempUri,
     };
 
     existing.unshift(data);

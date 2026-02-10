@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -5,34 +6,25 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-
-const dummyData = [
-  {
-    id: "1",
-    date: "01 Feb 2026",
-    time: "10:12 AM",
-    duration: "2m 12s",
-    status: "Saved",
-  },
-  {
-    id: "2",
-    date: "30 Jan 2026",
-    time: "9:45 PM",
-    duration: "1m 05s",
-    status: "Uploaded",
-  },
-];
+import { useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RecordHistoryScreen({ navigation }) {
+  const [records, setRecords] = useState([]);
+  console.log("RECORD SCREEN");
+  useEffect(() => {
+    (async () => {
+      const record = await AsyncStorage.getItem("record_history");
+      const parsed = record ? JSON.parse(record) : [];
+      setRecords(parsed);
+    })();
+  }, []);
   return (
     <View style={styles.container}>
-
-      <Text style={styles.title}>
-        Record History
-      </Text>
+      <Text style={styles.title}>Record History</Text>
 
       <FlatList
-        data={dummyData}
+        data={records}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -42,20 +34,14 @@ export default function RecordHistoryScreen({ navigation }) {
               navigation.navigate("RecordDetail", { record: item })
             }
           >
-            <Text style={styles.cardTitle}>
-              {item.date} • {item.time}
-            </Text>
+            <Text style={styles.cardTitle}>{item.startTime}</Text>
 
-            <Text style={styles.duration}>
-              Duration: {item.duration}
-            </Text>
+            <Text style={styles.duration}>Duration: {item.endTime}</Text>
 
             <Text
               style={[
                 styles.status,
-                item.status === "Uploaded"
-                  ? styles.uploaded
-                  : styles.saved,
+                item.status === "Uploaded" ? styles.uploaded : styles.saved,
               ]}
             >
               Status: {item.status}
@@ -63,7 +49,6 @@ export default function RecordHistoryScreen({ navigation }) {
           </TouchableOpacity>
         )}
       />
-
     </View>
   );
 }

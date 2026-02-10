@@ -40,8 +40,7 @@ export default function RecordingHomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { isRecording } = useSelector((state) => state.recording);
 
-  const [cameraPermission, requestCameraPermission] =
-    useCameraPermissions();
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
   /* -------------------- Ensure permissions -------------------- */
 
@@ -67,20 +66,16 @@ export default function RecordingHomeScreen({ navigation }) {
     }
 
     // Ensure directory (sync API)
-    // await ensureEvidenceDir();
-
     // Start recording (returns a promise that resolves AFTER stop)
-    const recordingPromise = cameraRef.current.startRecording({
+    const recordingPromise = cameraRef.current.recordAsync({
       maxDuration: 300, // 5 min safety cap
     });
-    console.log("Recording started");
-
     dispatch(
       startRecording({
         id: Date.now(),
         startTime: new Date().toISOString(),
         startLocation: await getCurrentLocation(),
-      })
+      }),
     );
 
     // Wait until recording stops
@@ -100,7 +95,7 @@ export default function RecordingHomeScreen({ navigation }) {
         stopRecording({
           endTime: new Date().toISOString(),
           endLocation: null,
-        })
+        }),
       );
     }
   }
@@ -110,9 +105,7 @@ export default function RecordingHomeScreen({ navigation }) {
   if (!cameraPermission?.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Text style={styles.permissionText}>
-          Camera permission is required
-        </Text>
+        <Text style={styles.permissionText}>Camera permission is required</Text>
         <TouchableOpacity onPress={requestCameraPermission}>
           <Text style={styles.permissionButton}>Grant Permission</Text>
         </TouchableOpacity>

@@ -97,8 +97,8 @@ export default function ProfileScreen() {
 
       {/* User Info */}
       <View style={styles.card}>
-        <InfoRow icon="person-outline" label="Name" value={user.name} />
-        <InfoRow icon="mail-outline" label="Email" value={user.email} />
+        <InfoRow icon="person-outline" label="Name" value={user?.name} />
+        <InfoRow icon="mail-outline" label="Email" value={user?.email} />
         <InfoRow icon="call-outline" label="Phone" value={user?.phone} />
       </View>
 

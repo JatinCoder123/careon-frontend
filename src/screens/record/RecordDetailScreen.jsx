@@ -24,11 +24,11 @@ export default function RecordDetailScreen({ route }) {
       {/* Info */}
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>
-          📅 Date: {record.date}
+          📅 Date: {record.startTime}
         </Text>
 
         <Text style={styles.infoText}>
-          ⏱ Duration: {record.duration}
+          ⏱ Duration: {record.endTime}
         </Text>
 
         <Text style={styles.infoText}>

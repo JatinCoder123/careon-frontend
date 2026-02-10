@@ -139,12 +139,6 @@ export default function PhoneLoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#000",
-  },
   input: {
     borderWidth: 1,
     borderColor: "#444",
