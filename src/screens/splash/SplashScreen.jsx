@@ -26,7 +26,7 @@ export default function SplashScreen() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (!token) {
-        navigation.replace("App");
+        navigation.replace("Auth");
         return;
       }
 

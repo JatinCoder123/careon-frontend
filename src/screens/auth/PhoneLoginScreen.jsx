@@ -61,15 +61,15 @@ export default function PhoneLoginScreen() {
       // 🔐 Firebase ID Token
       const firebaseToken = await userCredential.user.getIdToken();
 
-      // 🔗 Call backend
-      const { token, user } = await phoneLogin(firebaseToken);
+      // // 🔗 Call backend
+      // const { token, user } = await phoneLogin(firebaseToken);
 
-      // 🔐 Store backend JWT
-      await SecureStore.setItemAsync("authToken", token);
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      // // 🔐 Store backend JWT
+      // await SecureStore.setItemAsync("authToken", token);
+      // await SecureStore.setItemAsync("user", JSON.stringify(user));
 
-      // 🚀 Update redux + navigate
-      dispatch(userAction.setUser(user));
+      // // 🚀 Update redux + navigate
+      // dispatch(userAction.setUser(user));
       navigation.replace("App");
 
       Alert.alert("Success", "Logged in successfully");

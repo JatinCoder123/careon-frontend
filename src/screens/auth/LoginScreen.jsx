@@ -34,16 +34,16 @@ export default function LoginScreen() {
       }
       console.log("Google ID Token:", data.idToken);
       // 🔗 Send Google token to backend
-      const { token, user } = await googleLogin(data.idToken);
+      // const { token, user } = await googleLogin(data.idToken);
 
-      //   // 🔐 Store app JWT
-      await SecureStore.setItemAsync("authToken", token);
+      // //   // 🔐 Store app JWT
+      // await SecureStore.setItemAsync("authToken", token);
 
-      //   // (Optional) store user info
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      // //   // (Optional) store user info
+      // await SecureStore.setItemAsync("user", JSON.stringify(user));
 
-      // 🚀 Enter the app
-      dispatch(userAction.setUser(user));
+      // // 🚀 Enter the app
+      // dispatch(userAction.setUser(user));
       navigation.replace("App");
     } catch (e) {
       console.log("Google login failed", e);
