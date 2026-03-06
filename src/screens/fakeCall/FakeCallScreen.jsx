@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import * as Contacts from "expo-contacts";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useFakeCall, CALL_STATE } from "../../context/fakeCall.context";
 import {
@@ -20,12 +21,27 @@ import {
 
 export default function FakeCallSetupScreen() {
   const { setCallState, fakeCallContact, setFakeCallContact } = useFakeCall();
-  const updateContactFromStorage = (key, value) => {
-    setFakeCallContact((prevContact) => ({
-      ...prevContact,
-      [key]: value,
-    }));
-  };
+ async function updateContactFromStorage(newData) {
+  try {
+    const stored = await AsyncStorage.getItem("FakeCallContact");
+
+    let contact = stored ? JSON.parse(stored) : fakeCallContact;
+
+    const updatedContact = {
+      ...contact,
+      ...newData,
+    };
+
+    await AsyncStorage.setItem(
+      "FakeCallContact",
+      JSON.stringify(updatedContact)
+    );
+
+    setFakeCallContact(updatedContact);
+  } catch (error) {
+    console.log("Error updating contact:", error);
+  }
+}
   const [delay, setDelay] = useState(10);
 
   /* ---------------- PICK IMAGE ---------------- */
@@ -45,34 +61,34 @@ export default function FakeCallSetupScreen() {
     });
 
     if (!result.canceled) {
-      updateContactFromStorage("profilePic", result.assets[0].uri);
+      updateContactFromStorage({"profilePic": result.assets[0].uri});
     }
   }
 
   /* ---------------- PICK CONTACT ---------------- */
-  async function pickContact() {
-    const { status } = await Contacts.requestPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission required", "Contacts access is needed");
-      return;
-    }
-
-    const result = await Contacts.presentContactPickerAsync({
-      fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
-    });
-    console.log("Picked contact:", result);
-    if (!result) return;
-
-    const { firstName, phoneNumbers, image } = result;
-
-    if (firstName) updateContactFromStorage("name", firstName);
-    if (phoneNumbers?.length) {
-      updateContactFromStorage("number", phoneNumbers[0].number);
-    }
-    if (image) {
-      updateContactFromStorage("profilePic", image.uri);
-    }
+ async function pickContact() {
+  const { status } = await Contacts.requestPermissionsAsync();
+  if (status !== "granted") {
+    Alert.alert("Permission required", "Contacts access is needed");
+    return;
   }
+
+  const result = await Contacts.presentContactPickerAsync({
+    fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
+  });
+
+  if (!result) return;
+
+  const { name, phoneNumbers, image } = result;
+
+  updateContactFromStorage({
+    name: name || fakeCallContact.name,
+    number: phoneNumbers?.length
+      ? phoneNumbers[0].number
+      : fakeCallContact.number,
+    profilePic: image?.uri || fakeCallContact.profilePic,
+  });
+}
 
   /* ---------------- SCHEDULE CALL ---------------- */
   function handleSchedule() {
@@ -114,7 +130,7 @@ export default function FakeCallSetupScreen() {
       <Text style={styles.label}>Caller Name</Text>
       <TextInput
         value={fakeCallContact.name}
-        onChangeText={(value) => updateContactFromStorage("name", value)}
+        onChangeText={(value) => updateContactFromStorage({"name": value})}
         style={styles.input}
       />
 
@@ -122,7 +138,7 @@ export default function FakeCallSetupScreen() {
       <Text style={styles.label}>Caller Number</Text>
       <TextInput
         value={fakeCallContact.number}
-        onChangeText={(value) => updateContactFromStorage("number", value)}
+        onChangeText={(value) => updateContactFromStorage({"number": value})}
         style={styles.input}
         keyboardType="phone-pad"
       />

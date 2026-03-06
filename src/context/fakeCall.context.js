@@ -17,25 +17,29 @@ export function FakeCallProvider({ children }) {
   const [fakeCallContact, setFakeCallContact] = useState({
     name: "John Doe",
     number: "+1234567890",
-    profilePic: RANDOM_AVATAR,
+    profilePic: "https://i.pravatar.cc/300?img=4",
   });
-  useEffect(() => {
-    async function loadFakeCallContact() {
-      const name = await AsyncStorage.getItem("fakeCallContactName");
-      const number = await AsyncStorage.getItem("fakeCallContactNumber");
-      const profilePic = await AsyncStorage.getItem(
-        "fakeCallContactProfilePic",
-      );
+ useEffect(() => {
+  async function loadFakeCallContact() {
+    try {
+      const stored = await AsyncStorage.getItem("FakeCallContact");
 
-      setFakeCallContact({
-        name: name || "John Doe",
-        number: number || "+1234567890",
-        profilePic: profilePic || null,
-      });
+      if (stored) {
+        setFakeCallContact(JSON.parse(stored));
+      } else {
+        setFakeCallContact({
+          name: "John Doe",
+          number: "+1234567890",
+          profilePic: RANDOM_AVATAR,
+        });
+      }
+    } catch (error) {
+      console.log("Error loading contact:", error);
     }
+  }
 
-    loadFakeCallContact();
-  }, []);
+  loadFakeCallContact();
+}, []);
 
   return (
     <FakeCallContext.Provider

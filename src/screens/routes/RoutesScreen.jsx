@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Text, Dimensions, Platform } from "react-native";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import  { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Text, Dimensions, Platform, ActivityIndicator } from "react-native";import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import axios from "axios";
 import SearchBar from "./SearchBar";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,9 +18,7 @@ export default function RoutesScreen() {
   );
   const [loadingRoutes, setLoadingRoutes] = useState(false);
 
-  /* --------------------------------------------------
-     1️⃣ GET USER LOCATION
-  ---------------------------------------------------*/
+
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -44,18 +40,13 @@ export default function RoutesScreen() {
     })();
   }, []);
 
-  /* --------------------------------------------------
-     2️⃣ FETCH ROUTES WHEN DESTINATION CHANGES
-  ---------------------------------------------------*/
   useEffect(() => {
     if (userLocation && destination) {
       fetchRoutes();
     }
   }, [destination]);
 
-  /* --------------------------------------------------
-     3️⃣ FETCH MULTIPLE ROUTES
-  ---------------------------------------------------*/
+ 
   const fetchRoutes = async () => {
     try {
       setLoadingRoutes(true);
@@ -78,9 +69,6 @@ export default function RoutesScreen() {
     }
   };
 
-  /* --------------------------------------------------
-     4️⃣ FIT MAP TO ROUTES
-  ---------------------------------------------------*/
   const fitMapToRoutes = (routes) => {
     const points = [];
 
@@ -108,9 +96,7 @@ export default function RoutesScreen() {
     });
   };
 
-  /* --------------------------------------------------
-     5️⃣ POLYLINE DECODER
-  ---------------------------------------------------*/
+
   const decodePolyline = (t) => {
     let points = [];
     let index = 0,
@@ -191,7 +177,7 @@ export default function RoutesScreen() {
           <Marker
             coordinate={destination}
             title="Destination"
-            pinColor="green"
+            pinColor="blue"
           />
         )}
 
@@ -205,13 +191,16 @@ export default function RoutesScreen() {
           />
         ))}
       </MapView>
+       {loadingRoutes && (
+        <View style={styles.loaderOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+          <Text style={styles.loadingText}>Finding best routes...</Text>
+        </View>
+      )}
     </View>
   );
 }
 
-/* --------------------------------------------------
-   STYLES
----------------------------------------------------*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -232,5 +221,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+   loaderOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
