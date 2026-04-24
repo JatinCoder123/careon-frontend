@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "210267455863",
+    "project_id": "careon-6d051",
+    "storage_bucket": "careon-6d051.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210267455863:android:f6d57dcd8c73b083de6172",
+        "android_client_info": {
+          "package_name": "com.careon.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtzoAHlaEqS31uSEFLJP_b_1lIdDVvRrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

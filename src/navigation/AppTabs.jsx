@@ -1,6 +1,5 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 /* Screens */
@@ -8,7 +7,6 @@ import HomeScreen from "../screens/home/HomeScreen";
 import SoSScreen from "../screens/sos/SoSScreen";
 import RecordScreen from "../screens/record/RecordScreen";
 import FakeCallScreen from "../screens/fakeCall/FakeCallScreen";
-import ProfileScreen from "../screens/profile/ProfileScreen";
 import RoutesScreen from "../screens/routes/RoutesScreen";
 
 const Tab = createBottomTabNavigator();
@@ -82,10 +80,31 @@ export default function AppTabs() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Routes" component={RoutesScreen} />
 
-      <Tab.Screen name="SOS" component={SoSScreen} />
+      <Tab.Screen
+        name="SOS"
+        component={SoSScreen}
+        options={{
+          tabBarLabel: "",
+          tabBarButton: (props) => <SOSButton {...props} />,
+        }}
+      />
       <Tab.Screen name="Record" component={RecordScreen} />
       <Tab.Screen name="FakeCall" component={FakeCallScreen} />
     </Tab.Navigator>
+  );
+}
+function SOSButton({ children, onPress }) {
+  return (
+    <View style={styles.sosWrapper}>
+      <TouchableOpacity
+        style={styles.sosButton}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <AntDesign name="alert" size={30} color="#fff" />
+        <Text style={styles.sosText}>SOS</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -112,4 +131,35 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "500",
   },
+  sosWrapper: {
+  position: "absolute",
+  top: -30,
+  left: 0,
+  right: 0,
+  alignItems: "center",
+},
+
+sosButton: {
+  width: 80,
+  height: 80,
+  borderRadius: 40,
+  backgroundColor: COLORS.primary,
+  justifyContent: "center",
+  alignItems: "center",
+
+  // 🔥 3D Shadow
+  shadowColor: "#F44336",
+  shadowOffset: { width: 0, height: 8 },
+  shadowOpacity: 0.5,
+  shadowRadius: 10,
+  elevation: 12,
+},
+
+sosText: {
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: "700",
+  marginTop: 2,
+},
+
 });
