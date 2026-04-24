@@ -40,7 +40,8 @@
     "extra": {
       "eas": {
         "projectId": "88f4d44f-c1b1-4509-8666-6d608b8890fd"
-      }
+      },
+      "USER_API_URL": "https://careon-backend.onrender.com/api/v1"
     },
     "owner": "jatin-verma"
   }
