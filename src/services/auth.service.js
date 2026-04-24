@@ -4,7 +4,7 @@ import { USER_API_URL } from "../../assets/assets";
 export const googleLogin = async (idToken) => {
   try {
     const { data } = await axios.post(
-      `${USER_API_URL}/login/google`,
+      `${USER_API_URL}/user/login/google`,
       { idToken },
       {
         headers: {
@@ -20,7 +20,7 @@ export const googleLogin = async (idToken) => {
 };
 export const verifyToken = async (token) => {
   try {
-    const { data } = await axios.get(`${USER_API_URL}/me`, {
+    const { data } = await axios.get(`${USER_API_URL}/user/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

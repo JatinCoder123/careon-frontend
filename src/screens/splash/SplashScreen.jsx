@@ -32,7 +32,7 @@ export default function SplashScreen() {
 
       // 🔐 Verify token with backend
       const data = await verifyToken(token);
-
+      console.log("Token verification result:", data);
       if (data.authenticated) {
         dispatch(userAction.setUser(data.user));
         navigation.replace("App");

@@ -15,7 +15,7 @@ import { routesAction } from "../../store/slices/routes.slice";
 
 export default function HomeScreen() {
   const [safetyStatus] = useState("medium");
-  const { userLocation:location } = useSelector((state) => state.routes);
+  const { userLocation: location } = useSelector((state) => state.routes);
   const dispatch = useDispatch();
   const currentTime = new Date().toLocaleTimeString([], {
     hour: "2-digit",

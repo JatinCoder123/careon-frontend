@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -6,38 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Modal,
-  TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import {
-  Ionicons,
-  Feather,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ProfileScreen() {
-  const [profileImage, setProfileImage] = useState(
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
-  );
-
-  const [userInfo] = useState({
-    name: "John Anderson",
-    email: "john.anderson@email.com",
-    phone: "+1 (555) 123-4567",
-  });
-
-  const [emergencyContacts, setEmergencyContacts] = useState([
-    { id: "1", name: "Sarah Anderson", phone: "+1 234 5678", relationship: "Spouse" },
-    { id: "2", name: "Michael Anderson", phone: "+1 345 6789", relationship: "Brother" },
-  ]);
-
-  const [showAddContact, setShowAddContact] = useState(false);
-  const [newContact, setNewContact] = useState({
-    name: "",
-    phone: "",
-    relationship: "",
-  });
+  const { user } = useSelector((state) => state.user);
+  const navigation = useNavigation();
 
   /* 📸 Pick profile image */
   const pickImage = async () => {
@@ -47,33 +24,16 @@ export default function ProfileScreen() {
     });
 
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      // upload later
     }
-  };
-
-  const addContact = () => {
-    setEmergencyContacts([
-      ...emergencyContacts,
-      { ...newContact, id: Date.now().toString() },
-    ]);
-    setNewContact({ name: "", phone: "", relationship: "" });
-    setShowAddContact(false);
-  };
-
-  const deleteContact = (id) => {
-    setEmergencyContacts(emergencyContacts.filter((c) => c.id !== id));
   };
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View>
-
       {/* Profile Image */}
       <View style={styles.imageWrapper}>
-        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        <Image source={{ uri: user.photo }} style={styles.profileImage} />
+
         <TouchableOpacity style={styles.cameraBtn} onPress={pickImage}>
           <Ionicons name="camera" size={18} color="#fff" />
         </TouchableOpacity>
@@ -81,82 +41,35 @@ export default function ProfileScreen() {
 
       {/* User Info */}
       <View style={styles.card}>
-        <InfoRow icon="person-outline" label="Name" value={userInfo.name} />
-        <InfoRow icon="mail-outline" label="Email" value={userInfo.email} />
-        <InfoRow icon="call-outline" label="Phone" value={userInfo.phone} />
-      </View>
+        <InfoRow icon="person-outline" label="Name" value={user.name} />
 
-      {/* Emergency Contacts */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Emergency Contacts</Text>
-        <TouchableOpacity onPress={() => setShowAddContact(true)}>
-          <Ionicons name="add-circle" size={28} color="#F44336" />
-        </TouchableOpacity>
-      </View>
+        <InfoRow icon="mail-outline" label="Email" value={user.email} />
 
-      {emergencyContacts.map((contact) => (
-        <View key={contact.id} style={styles.contactCard}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.contactName}>{contact.name}</Text>
-            <Text style={styles.contactRelation}>{contact.relationship}</Text>
-            <Text style={styles.contactPhone}>{contact.phone}</Text>
-          </View>
-          <TouchableOpacity onPress={() => deleteContact(contact.id)}>
-            <Feather name="trash-2" size={20} color="#EF4444" />
-          </TouchableOpacity>
-        </View>
-      ))}
+        <InfoRow icon="call-outline" label="Phone" value={user.phone} />
 
-      {/* Add Contact Modal */}
-      <Modal transparent visible={showAddContact} animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Add Emergency Contact</Text>
-
-            <TextInput
-              placeholder="Name"
-              style={styles.input}
-              value={newContact.name}
-              onChangeText={(t) => setNewContact({ ...newContact, name: t })}
-            />
-            <TextInput
-              placeholder="Phone"
-              style={styles.input}
-              value={newContact.phone}
-              onChangeText={(t) => setNewContact({ ...newContact, phone: t })}
-              keyboardType="phone-pad"
-            />
-            <TextInput
-              placeholder="Relationship"
-              style={styles.input}
-              value={newContact.relationship}
-              onChangeText={(t) =>
-                setNewContact({ ...newContact, relationship: t })
-              }
+        {/* NEW ROW */}
+        <TouchableOpacity
+          style={styles.arrowRow}
+          onPress={() => navigation.navigate("EmergencyContacts")}
+        >
+          <View style={styles.leftRow}>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={20}
+              color="#F44336"
             />
 
-            <View style={styles.modalBtns}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => setShowAddContact(false)}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.addBtn}
-                disabled={
-                  !newContact.name ||
-                  !newContact.phone ||
-                  !newContact.relationship
-                }
-                onPress={addContact}
-              >
-                <Text style={{ color: "#fff" }}>Add</Text>
-              </TouchableOpacity>
+            <View>
+              <Text style={styles.infoLabel}>Emergency Contact</Text>
+              <Text style={styles.infoValue}>
+                Manage your emergency contacts
+              </Text>
             </View>
           </View>
-        </View>
-      </Modal>
+
+          <Feather name="chevron-right" size={22} color="#9CA3AF" />
+        </TouchableOpacity>
+      </View>
 
       {/* Logout */}
       <TouchableOpacity style={styles.logoutBtn}>
@@ -167,10 +80,11 @@ export default function ProfileScreen() {
   );
 }
 
-/* 🔹 Reusable row */
+/* Reusable Row */
 const InfoRow = ({ icon, label, value }) => (
   <View style={styles.infoRow}>
     <Ionicons name={icon} size={20} color="#F44336" />
+
     <View>
       <Text style={styles.infoLabel}>{label}</Text>
       <Text style={styles.infoValue}>{value}</Text>
@@ -178,19 +92,25 @@ const InfoRow = ({ icon, label, value }) => (
   </View>
 );
 
-/* 🎨 Styles */
+/* Styles */
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0B1220", padding: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#0B1220",
+    padding: 16,
+  },
 
-  header: { paddingVertical: 20 },
-  headerTitle: { fontSize: 24, color: "#fff", fontWeight: "700" },
+  imageWrapper: {
+    alignItems: "center",
+    marginVertical: 16,
+  },
 
-  imageWrapper: { alignItems: "center", marginVertical: 16 },
   profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
   },
+
   cameraBtn: {
     position: "absolute",
     bottom: 0,
@@ -207,64 +127,38 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  infoRow: { flexDirection: "row", gap: 12, marginBottom: 12 },
-  infoLabel: { color: "#9CA3AF", fontSize: 12 },
-  infoValue: { color: "#fff", fontSize: 14 },
+  infoRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 14,
+  },
 
-  sectionHeader: {
+  infoLabel: {
+    color: "#9CA3AF",
+    fontSize: 12,
+  },
+
+  infoValue: {
+    color: "#fff",
+    fontSize: 14,
+  },
+
+  /* New Row */
+  arrowRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#1F2937",
+    paddingTop: 14,
+    marginTop: 4,
   },
-  sectionTitle: { color: "#fff", fontSize: 18, fontWeight: "600" },
 
-  contactCard: {
-    backgroundColor: "#111827",
-    borderRadius: 14,
-    padding: 14,
+  leftRow: {
     flexDirection: "row",
+    gap: 12,
     alignItems: "center",
-    marginBottom: 10,
-  },
-  contactName: { color: "#fff", fontWeight: "600" },
-  contactRelation: { color: "#9CA3AF", fontSize: 12 },
-  contactPhone: { color: "#E5E7EB", fontSize: 13 },
-
-  modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modal: {
-    backgroundColor: "#111827",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalTitle: { color: "#fff", fontSize: 18, marginBottom: 12 },
-
-  input: {
-    backgroundColor: "#1F2937",
-    borderRadius: 10,
-    padding: 12,
-    color: "#fff",
-    marginBottom: 10,
-  },
-
-  modalBtns: { flexDirection: "row", gap: 10 },
-  cancelBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#E5E7EB",
-    alignItems: "center",
-  },
-  addBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#F44336",
-    alignItems: "center",
   },
 
   logoutBtn: {
@@ -276,5 +170,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  logoutText: { color: "#fff", fontWeight: "600" },
+
+  logoutText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
 });

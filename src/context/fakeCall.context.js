@@ -19,44 +19,50 @@ export function FakeCallProvider({ children }) {
     number: "+1234567890",
     profilePic: "https://i.pravatar.cc/300?img=4",
   });
- useEffect(() => {
-  async function loadFakeCallContact() {
-    try {
-      const stored = await AsyncStorage.getItem("FakeCallContact");
+  useEffect(() => {
+    async function loadFakeCallContact() {
+      try {
+        const stored = await AsyncStorage.getItem("FakeCallContact");
 
-      if (stored) {
-        setFakeCallContact(JSON.parse(stored));
-      } else {
-        setFakeCallContact({
-          name: "John Doe",
-          number: "+1234567890",
-          profilePic: RANDOM_AVATAR,
-        });
+        if (stored) {
+          setFakeCallContact(JSON.parse(stored));
+        } else {
+          setFakeCallContact({
+            name: "John Doe",
+            number: "+1234567890",
+            profilePic: RANDOM_AVATAR,
+          });
+        }
+      } catch (error) {
+        console.log("Error loading contact:", error);
       }
-    } catch (error) {
-      console.log("Error loading contact:", error);
     }
-  }
 
-  loadFakeCallContact();
-}, []);
-
+    loadFakeCallContact();
+  }, []);
+  const value = {
+    callState,
+    setCallState,
+    callConfig,
+    setCallConfig,
+    callDuration,
+    setCallDuration,
+    fakeCallContact,
+    setFakeCallContact,
+  };
   return (
-    <FakeCallContext.Provider
-      value={{
-        callState,
-        setCallState,
-        callConfig,
-        setCallConfig,
-        callDuration,
-        setCallDuration,
-        fakeCallContact,
-        setFakeCallContact,
-      }}
-    >
+    <FakeCallContext.Provider value={value}>
       {children}
     </FakeCallContext.Provider>
   );
 }
 
-export const useFakeCall = () => useContext(FakeCallContext);
+export const useFakeCall = () => {
+  const context = useContext(FakeCallContext);
+
+  if (!context) {
+    throw new Error("useFakeCall must be used inside FakeCallProvider");
+  }
+
+  return context;
+};

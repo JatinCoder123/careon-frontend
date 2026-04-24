@@ -5,14 +5,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 /* Navigators */
 import AppTabs from "./AppTabs";
-
+import { useFakeCall, CALL_STATE } from "../context/fakeCall.context";
+import IncomingCallScreen from "../screens/fakeCall/IncomingCallScreen";
+import OngoingCallScreen from "../screens/fakeCall/OngoingCallScreen";
 /* Screens */
 import ProfileScreen from "../screens/profile/ProfileScreen";
+import EmergencyContactsScreen from "../screens/profile/EmergencyContactsScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
-  const {user} = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
+  const { callState, setCallState, setCallConfig } = useFakeCall();
+
+  if (callState === CALL_STATE.RINGING) return <IncomingCallScreen />;
+  if (callState === CALL_STATE.ONGOING) return <OngoingCallScreen />;
   return (
     <Stack.Navigator>
       {/* Tabs with custom header */}
@@ -34,7 +41,7 @@ export default function AppStack() {
             </View>
           ),
           headerRight: () => (
-               <TouchableOpacity
+            <TouchableOpacity
               style={styles.profileBtn}
               onPress={() => navigation.navigate("Profile")}
             >
@@ -67,6 +74,17 @@ export default function AppStack() {
           headerTintColor: COLORS.textPrimary,
         }}
       />
+      <Stack.Screen
+        name="EmergencyContacts"
+        component={EmergencyContactsScreen}
+        options={{
+          title: "Emergency Contacts",
+          headerStyle: {
+            backgroundColor: COLORS.background,
+          },
+          headerTintColor: COLORS.textPrimary,
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -93,10 +111,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   profileImage: {
-  width: 32,
-  height: 32,
-  borderRadius: 16,
-},
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
 
   appName: {
     fontSize: 18,
