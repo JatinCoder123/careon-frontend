@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     height: "100%",
     padding: 20,
     justifyContent: "center",
-    backgroundColor: "rgba(22,24,29,0)",
+    backgroundColor: "rgba(22,24,29,1)",
   },
 
   title: {

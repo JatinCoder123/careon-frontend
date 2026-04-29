@@ -11,6 +11,7 @@ import {
 import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AlertContactsButton from "./AlertContactsButton";
 
 const GOOGLE_API_KEY = "AIzaSyAhBGnIyTLuRzdWppKBJNW9bqLh9Odpp_A";
 
@@ -148,6 +149,7 @@ export default function SoSScreen() {
 
   return (
     <View style={styles.container}>
+      <AlertContactsButton />
       <Text style={styles.section}>Nearby Hospitals</Text>
 
       <FlatList
