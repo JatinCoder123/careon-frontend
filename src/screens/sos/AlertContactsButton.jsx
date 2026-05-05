@@ -88,27 +88,8 @@ export default function AlertContactsButton() {
       const lng = loc.coords.longitude;
 
       const batteryPercent = 40;
-
-      const mapUrl = `https://maps.google.com/?q=${lat},${lng}`;
-
-      const message = `🚨 EMERGENCY ALERT 🚨
-
-I need immediate help.
-
-📍 My Location:
-${mapUrl}
-
-🔋 Battery:
-${batteryPercent}%
-
-Please contact me urgently.`;
-
-      /* -------------------------
-       FIRE EMAIL IN BACKGROUND
-    -------------------------- */
-
       axios
-        .post(`${USER_API_URL}/sos/send-email`, {
+        .post(`${USER_API_URL}/sos/send`, {
           userName: user.name,
           latitude: lat,
           longitude: lng,
@@ -116,28 +97,11 @@ Please contact me urgently.`;
           contacts,
         })
         .then(() => {
-          console.log("Email sent");
+          console.log("Alert sent");
         })
         .catch((err) => {
-          console.log("Email failed", err);
+          console.log("Alert failed", err);
         });
-
-      /* -------------------------
-       WHATSAPP INSTANT
-    -------------------------- */
-
-      for (const item of contacts) {
-        if (item.phone) {
-          const phone = item.phone.replace(/\D/g, "");
-
-          const whatsapp = `https://wa.me/${phone}?text=${encodeURIComponent(
-            message,
-          )}`;
-
-          Linking.openURL(whatsapp);
-        }
-      }
-
       Alert.alert("SOS Triggered", "Emergency alerts started.");
     } catch (error) {
       Alert.alert("Failed", "Unable to send emergency alert.");
